@@ -139,6 +139,8 @@ import java.util.List;
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
+
+                Log.v(LOG_TAG, "Forecast JSON String: " + forecastJsonStr);  //Haciendo debug de lo obtenido
             } catch (IOException e) {
                 Log.e("PlaceholderFragment", "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attempting
