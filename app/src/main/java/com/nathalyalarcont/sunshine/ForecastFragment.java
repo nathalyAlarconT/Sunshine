@@ -1,7 +1,10 @@
 package com.nathalyalarcont.sunshine;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.content.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,9 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -55,12 +55,24 @@ import java.util.List;
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
         if(id == R.id.action_refresh){
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("94043");
-            Log.v("NAT","NATHALY");
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateWeather(){
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        weatherTask.execute(location);
+       // Log.v("NAT","NATHALY");
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
+        updateWeather();
     }
 
     @Override
@@ -68,18 +80,7 @@ import java.util.List;
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // Creating fake data
-        String[] forecastArray = {
-                "Today - Sunny - 88/63",
-                "Tomorrow - Foggy - 70//40",
-                "Weds - Cloudy - 72/63",
-                "Thurs - Asteroids - 75/65",
-                "Fri - Heavy Rain - 65/75",
-                "Sat - HELP TRAPPED IN WEAThERSTATION - 22/33",
-                "Sun - Sunny - 80/68"
-        };
-
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+        // List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
         mForecastAdapter = new ArrayAdapter<String>(
                 // The current context (this fragment's parameter activity)
                 getActivity(),
@@ -88,7 +89,7 @@ import java.util.List;
                 // ID of the textView to populate
                 R.id.list_item_forecast_textview,
                 // Forecast data
-                weekForecast);
+                new ArrayList<String>());
         // Get a reference to the ListView
         // and attach this adapter to ListView
         ListView listView = (ListView) rootView.findViewById(
