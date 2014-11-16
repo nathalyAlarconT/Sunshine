@@ -34,6 +34,7 @@ import java.util.List;
  * Created by Nathaly on 11/11/2014.
  */
     public class ForecastFragment extends Fragment {
+        private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
     }
@@ -77,7 +78,7 @@ import java.util.List;
         };
 
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
-        ArrayAdapter<String> mForecastAdapter = new ArrayAdapter<String>(
+        mForecastAdapter = new ArrayAdapter<String>(
                 // The current context (this fragment's parameter activity)
                 getActivity(),
                 // ID of list item layout
@@ -296,6 +297,15 @@ import java.util.List;
             return null;
         }
 
+        @Override
+        protected void onPostExecute(String[] result) {
+            if(result != null){
+                mForecastAdapter.clear();
+                for(String dayForecastStr : result){
+                    mForecastAdapter.add(dayForecastStr);
+                }
+            }
+        }
     }
 }
 
